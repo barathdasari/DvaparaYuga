@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dvapara Yuga — Celestial Lineage Cosmos</title>
+<script>tailwind = { config: { darkMode: 'class' } }</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Noto+Serif+Devanagari:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ── Design tokens — milk white glassmorphism ── */
+:root {
+  --bg:      #F4F2EE;
+  --glass:   rgba(255,255,255,0.78);
+  --glass2:  rgba(255,255,255,0.55);
+  --card:    rgba(255,255,255,0.92);
+  --hover:   rgba(255,255,255,0.96);
+  --border:  rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.04);
+  --shadow:  rgba(60,40,120,0.08);
+  --text-h:  #0D0D1A;
+  --text-b:  #3D3D5C;
+  --text-m:  #8888AA;
+  --accent:  #6C4FBF;
+  --accent2: #9B72F0;
+  --accent-g:rgba(108,79,191,0.10);
+  --link-c:  rgba(120,110,160,0.28);
+  --dot:     rgba(108,79,191,0.08);
+  --nlabel:  #0D0D1A;
+  /* Clan colours */
+  --kuru:    #3B7BF5; --yadava:#F5A623; --panchala:#EF5350;
+  --gandhara:#9C6EF5; --madra:#26C6A0;  --divine:#F5A623;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Outfit',system-ui,sans-serif;
+  background:var(--bg);color:var(--text-h)}
+#app{display:flex;flex-direction:column;height:100vh}
+#ws{display:flex;flex:1;overflow:hidden}
+
+/* ── HEADER ── */
+#hdr{
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  background:var(--glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 20px var(--shadow);
+  flex-shrink:0;z-index:20;
+}
+.hbrand{display:flex;align-items:center;gap:12px}
+.hicon{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#7B5CF0,#5B3BD0);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(108,79,191,0.35);
+}
+.hicon i{color:#fff;font-size:18px}
+.htitles{line-height:1.1}
+.htitle{
+  font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:900;
+  background:linear-gradient(90deg,#5B3BD0,#9B72F0);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:.06em;
+}
+.hsub{display:flex;align-items:center;gap:7px;margin-top:3px}
+.hsubt{font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;color:var(--text-m);letter-spacing:.1em}
+.hdeva{font-family:'Noto Serif Devanagari',serif;font-size:11px;color:var(--text-m);opacity:.6}
+
+/* Legend */
+.hleg{display:none;align-items:center;gap:18px;font-size:12px;font-weight:500;color:var(--text-b)}
+@media(min-width:1180px){.hleg{display:flex}}
+.li{display:flex;align-items:center;gap:6px}
+.ld{width:12px;height:12px;border-radius:50%;border:2px solid}
+.ll{height:0;width:20px}
+.lsep{width:1px;height:18px;background:var(--border);margin:0 4px}
+
+/* Header buttons */
+.hctrl{display:flex;align-items:center;gap:8px}
+.hbtn{
+  height:34px;padding:0 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--glass2);
+  backdrop-filter:blur(8px);
+  color:var(--text-b);font-family:'Outfit',sans-serif;font-weight:600;
+  font-size:12px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all .18s;
+}
+.hbtn:hover{background:var(--hover);border-color:var(--accent);color:var(--accent)}
+.hbtn-accent{
+  background:linear-gradient(135deg,rgba(108,79,191,.12),rgba(155,114,240,.08));
+  border-color:rgba(108,79,191,.25);color:var(--accent);
+}
+.hbtn-accent:hover{background:linear-gradient(135deg,rgba(108,79,191,.2),rgba(155,114,240,.14))}
+
+/* ── LEFT PANEL ── */
+#lp{
+  width:272px;flex-shrink:0;
+  background:var(--glass);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;z-index:10;
+}
+.psec{padding:14px 16px;border-bottom:1px solid var(--border2)}
+.plabel{
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-m);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.plabel::after{content:'';flex:1;height:1px;background:var(--border)}
+.plabel i{font-size:9px;color:var(--accent)}
+
+/* Search */
+.swrap{position:relative}
+.sinput{
+  width:100%;
+  background:var(--card);
+  border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 12px 10px 36px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:400;color:var(--text-h);
+  outline:none;transition:border-color .18s,box-shadow .18s;
+  box-shadow:0 2px 8px var(--shadow);
+}
+.sinput:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-g)}
+.sinput::placeholder{color:var(--text-m)}
+.sico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-m);font-size:12px}
+#sugg{
+  position:absolute;left:0;right:0;top:calc(100% + 6px);
+  background:var(--card);
+  backdrop-filter:blur(20px);
+  border:1.5px solid var(--border);border-radius:12px;
+  box-shadow:0 12px 40px var(--shadow);
+  max-height:200px;overflow-y:auto;z-index:100;
+}
+#sugg.hidden{display:none}
+.sitem{
+  padding:9px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border2);transition:background .12s;
+  font-size:13px;font-weight:500;color:var(--text-h);
+}
+.sitem:last-child{border-bottom:none}
+.sitem:hover{background:var(--hover)}
+.sclan{
+  font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 7px;border-radius:6px;
+  background:var(--accent-g);color:var(--accent);
+}
+
+/* Clan filter */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cbtn{
+  padding:8px 10px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--card);
+  color:var(--text-b);font-size:12px;font-weight:500;cursor:pointer;text-align:left;
+  transition:all .18s;display:flex;align-items:center;gap:5px;
+  font-family:'Outfit',sans-serif;border-left-width:3px;
+}
+.cbtn:hover{background:var(--hover);color:var(--text-h)}
+.cbtn.active{background:var(--hover);color:var(--text-h);font-weight:700;
+  box-shadow:0 2px 12px var(--shadow);}
+.cbtn[data-clan="Kuru"]    {border-left-color:var(--kuru)}
+.cbtn[data-clan="Yadava"]  {border-left-color:var(--yadava)}
+.cbtn[data-clan="Panchala"]{border-left-color:var(--panchala)}
+.cbtn[data-clan="Gandhara"]{border-left-color:var(--gandhara)}
+.cbtn[data-clan="Madra"]   {border-left-color:var(--madra)}
+.cbtn[data-clan="Divine"]  {border-left-color:var(--divine)}
+.cbtn[data-clan="All"]{border-left-color:var(--accent);grid-column:span 2;justify-content:center}
+
+/* Allegiance */
+.arow{display:flex;gap:6px}
+.abtn{
+  flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:10px;
+  background:var(--card);color:var(--text-b);font-size:11px;font-weight:600;
+  cursor:pointer;text-align:center;transition:all .18s;font-family:'Outfit',sans-serif;
+}
+.abtn:hover{background:var(--hover)}
+.abtn[data-allegiance="Pandava"].active{background:rgba(59,130,246,.1);border-color:#3B82F6;color:#3B82F6}
+.abtn[data-allegiance="Kaurava"].active{background:rgba(239,68,68,.1);border-color:#EF4444;color:#EF4444}
+.abtn[data-allegiance="Neutral"].active{background:rgba(108,79,191,.1);border-color:var(--accent);color:var(--accent)}
+
+/* Guide */
+.glist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.gi{display:flex;gap:8px;align-items:flex-start;font-size:12px;font-weight:400;color:var(--text-b);line-height:1.55}
+.gi i{color:var(--accent);margin-top:2px;flex-shrink:0;font-size:10px}
+.chronicle{margin-top:12px;padding:10px 12px;
+  background:var(--accent-g);border:1.5px solid rgba(108,79,191,.15);
+  border-radius:10px;border-left:3px solid var(--accent)}
+.chronicle-h{font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.chronicle p{font-size:12px;color:var(--text-b);line-height:1.6}
+
+/* Stats */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scard{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:12px;padding:10px 12px;text-align:center;
+  box-shadow:0 2px 8px var(--shadow);
+}
+.snum{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;
+  color:var(--accent);display:block;line-height:1}
+.slbl{font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-m);
+  margin-top:3px;display:block}
+
+/* ── CANVAS ── */
+#cw{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+#cw::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(var(--dot) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;z-index:0;
+}
+#canvas{position:relative;width:100%;height:100%;z-index:1}
+
+/* Era Ruler overlay — fixed to canvas, syncs with zoom */
+#eraRuler{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  pointer-events:none;z-index:4;overflow:hidden;
+}
+.era-tick{
+  position:absolute;left:0;right:0;
+  display:flex;align-items:center;gap:0;
+  transform:translateY(-50%);
+}
+.era-pill{
+  flex-shrink:0;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(108,79,191,.2);
+  border-radius:0 8px 8px 0;
+  padding:3px 10px 3px 8px;
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+  white-space:nowrap;
+  box-shadow:2px 0 12px rgba(108,79,191,.08);
+}
+.era-line{
+  flex:1;height:1px;
+  background:linear-gradient(to right,rgba(108,79,191,.15),transparent);
+}
+
+/* Loader */
+#loader{
+  position:absolute;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  z-index:50;transition:opacity .5s;
+}
+.lwhl{
+  width:48px;height:48px;border:3px solid rgba(108,79,191,.15);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .85s linear infinite;margin-bottom:16px;
+}
+.ltitle{font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:700;
+  color:var(--accent);letter-spacing:.15em}
+.lsub{font-family:'Outfit',sans-serif;font-size:11px;color:var(--text-m);
+  letter-spacing:.08em;margin-top:6px}
+
+/* Zoom FABs */
+.zfab{position:absolute;bottom:20px;right:20px;display:flex;flex-direction:column;gap:5px;z-index:10}
+.zb{
+  width:36px;height:36px;
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1.5px solid var(--border);border-radius:10px;
+  color:var(--text-b);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:13px;transition:all .18s;box-shadow:0 2px 10px var(--shadow);
+}
+.zb:hover{border-color:var(--accent);color:var(--accent);background:var(--hover)}
+
+/* ── SVG node & link styles ── */
+.node{cursor:pointer}
+.node:hover{filter:brightness(1.12) drop-shadow(0 4px 12px rgba(108,79,191,.35))}
+.node-hl circle:first-of-type{
+  filter:drop-shadow(0 0 16px rgba(108,79,191,.8));
+  stroke:var(--accent2) !important;stroke-width:3px !important;
+}
+.link{fill:none;stroke-linecap:round;stroke-linejoin:round}
+/* Marriage: warm amber dashed */
+.ml{stroke:#E8922A;stroke-dasharray:6,4;stroke-width:2px;stroke-opacity:.65}
+/* Niyoga: purple dashed */
+.nl{stroke:#8B5CF6;stroke-dasharray:8,3,2,3;stroke-width:2px;stroke-opacity:.7}
+/* Divine: sky blue solid */
+.dl{stroke:#38BDF8;stroke-width:2.5px;stroke-opacity:.8}
+/* Yajna: emerald dashed */
+.yl{stroke:#34D399;stroke-dasharray:3,3;stroke-width:2px;stroke-opacity:.75}
+/* Child: soft grey */
+.cl{stroke:var(--link-c);stroke-width:1.5px;stroke-opacity:.6}
+@keyframes flow{to{stroke-dashoffset:-32}}
+.lhl{
+  stroke:var(--accent) !important;stroke-width:4px !important;stroke-opacity:1 !important;
+  stroke-dasharray:8,4 !important;animation:flow 1s linear infinite;
+}
+@keyframes divglow{0%,100%{stroke-opacity:.2}50%{stroke-opacity:.6}}
+.dglow{animation:divglow 2.5s ease-in-out infinite}
+@keyframes chirpulse{to{stroke-dashoffset:-44}}
+.cpulse{animation:chirpulse 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── Tooltip ── */
+#tip{
+  position:fixed;
+  background:var(--card);
+  backdrop-filter:blur(20px);
+  border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 14px;pointer-events:none;z-index:300;opacity:0;transition:opacity .12s;
+  box-shadow:0 8px 32px var(--shadow);max-width:190px;
+}
+#tip.on{opacity:1}
+.tn{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:var(--text-h);display:block}
+.te{font-size:11px;color:var(--text-b);display:block;margin-top:2px}
+.tbdgs{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tbdg{font-size:9px;font-family:'Outfit',sans-serif;font-weight:700;
+  letter-spacing:.04em;padding:2px 7px;border-radius:5px}
+.tbdg-p{background:rgba(59,130,246,.1);color:#3B7BF5;border:1px solid rgba(59,130,246,.2)}
+.tbdg-k{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2)}
+.tbdg-n{background:var(--accent-g);color:var(--accent);border:1px solid rgba(108,79,191,.2)}
+.tut{font-size:10px;font-weight:600;color:var(--accent);display:block;margin-top:4px}
+
+/* ── RIGHT INSPECTOR ── */
+#insp{
+  width:368px;flex-shrink:0;
+  background:var(--glass);
+  backdrop-filter:blur(24px) saturate(200%);
+  -webkit-backdrop-filter:blur(24px) saturate(200%);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  z-index:10;overflow:hidden;
+}
+#insp.open{transform:translateX(0)}
+#nosel{
+  flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:40px 28px;
+}
+.nsi{
+  width:64px;height:64px;
+  border:2px dashed rgba(108,79,191,.2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:rgba(108,79,191,.25);margin-bottom:16px;
+}
+.nst{font-size:13px;font-weight:400;line-height:1.65;color:var(--text-m)}
+
+#pv{flex:1;display:flex;flex-direction:column;overflow-y:auto}
+.pbanner{height:76px;flex-shrink:0;position:relative}
+.pclose{
+  position:absolute;top:10px;right:12px;
+  background:rgba(255,255,255,.35);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:8px;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(255,255,255,.9);font-size:12px;transition:all .18s;
+}
+.pclose:hover{background:rgba(255,255,255,.55)}
+.pavwrap{display:flex;justify-content:center;margin-top:-38px;flex-shrink:0;position:relative;z-index:2}
+#pav{
+  width:76px;height:76px;border-radius:50%;
+  border:4px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px var(--shadow),0 0 0 1px var(--border);
+  position:relative;
+}
+#pav i{font-size:28px}
+#pclanb{
+  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  font-family:'Outfit',sans-serif;font-size:8px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 10px;border-radius:12px;border:1px solid;white-space:nowrap;
+}
+.pnames{text-align:center;padding:18px 20px 8px;flex-shrink:0}
+#pname{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--text-h);letter-spacing:.04em}
+#psk{font-family:'Noto Serif Devanagari',serif;font-size:14px;color:var(--text-m);margin-top:3px}
+#pep{font-family:'Outfit',sans-serif;font-size:12px;font-style:italic;color:var(--accent);margin-top:4px;font-weight:500}
+.pbrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.pb{font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 10px;border-radius:12px;border:1px solid;
+  display:flex;align-items:center;gap:4px}
+.pb-div{background:rgba(245,166,35,.1);color:#D4930E;border-color:rgba(245,166,35,.25)}
+.pb-chi{background:rgba(52,211,153,.1);color:#059669;border-color:rgba(52,211,153,.25)}
+
+/* Stats bar */
+.psbar{display:grid;grid-template-columns:1fr 1fr 1fr;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  margin-top:10px;flex-shrink:0}
+.ps{padding:10px 5px;text-align:center;border-right:1px solid var(--border)}
+.ps:last-child{border-right:none}
+.psl{font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-m);display:block;margin-bottom:3px}
+.psv{font-size:13px;font-weight:700;color:var(--text-h);display:block}
+.psv.pa{color:#3B7BF5} .psv.pk{color:#EF4444} .psv.pn{color:var(--accent)}
+
+/* Inspector body */
+.pbody{padding:16px 18px;display:flex;flex-direction:column;gap:14px;flex:1}
+.psl2{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-m);display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.psl2 i{font-size:10px;color:var(--accent)}
+.pdesc{
+  font-family:'Outfit',sans-serif;font-size:13px;line-height:1.7;color:var(--text-b);
+  background:var(--card);padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--border);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.03);
+}
+.wcard{
+  background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  padding:10px 14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 10px var(--shadow);
+}
+.wico{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,rgba(108,79,191,.12),rgba(155,114,240,.07));
+  border:1.5px solid rgba(108,79,191,.2);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--accent);font-size:15px;flex-shrink:0;
+}
+.wlbl{font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-m)}
+.wval{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--text-h);margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{
+  padding:5px 12px;border:1.5px solid var(--border);border-radius:8px;
+  background:var(--card);color:var(--text-b);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif;
+}
+.chip:hover{background:var(--hover);color:var(--text-h);border-color:var(--accent)}
+.chip-none{font-size:12px;color:var(--text-m);font-style:italic}
+.btnlin{
+  width:100%;padding:11px;
+  background:linear-gradient(135deg,#6C4FBF,#4A30A0);
+  border:none;border-radius:12px;color:#fff;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(108,79,191,.35);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btnlin:hover{opacity:.9;box-shadow:0 6px 24px rgba(108,79,191,.5);transform:translateY(-1px)}
+.btnupin{
+  width:100%;padding:9px;background:transparent;
+  border:1.5px solid var(--border);border-radius:12px;
+  color:var(--text-b);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btnupin:hover{border-color:#EF4444;color:#EF4444;background:rgba(239,68,68,.05)}
+
+/* ── Help Modal ── */
+#hlp{
+  position:fixed;inset:0;
+  background:rgba(240,238,234,.6);
+  backdrop-filter:blur(8px);
+  z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;
+}
+#hlp.hidden{display:none}
+.mbox{
+  background:var(--card);
+  backdrop-filter:blur(24px);
+  border:1.5px solid var(--border);border-radius:20px;
+  max-width:520px;width:100%;overflow:hidden;
+  box-shadow:0 24px 80px rgba(60,40,120,.12);
+  animation:fadein .2s ease;
+}
+.mhd{
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,rgba(108,79,191,.06),transparent);
+}
+.mttl{font-family:'Cinzel Decorative',serif;font-size:13px;font-weight:700;color:var(--accent)}
+.mbdy{
+  padding:20px 22px;max-height:60vh;overflow-y:auto;
+  font-family:'Outfit',sans-serif;font-size:13px;line-height:1.7;color:var(--text-b);
+}
+.mbdy h4{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin:14px 0 8px}
+.mbdy ul{padding-left:18px} .mbdy li{margin-bottom:6px}
+.mft{padding:14px 22px;border-top:1px solid var(--border);text-align:right;background:rgba(108,79,191,.03)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(108,79,191,.2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Tooltip -->
+<div id="tip">
+  <span class="tn" id="ttN"></span>
+  <span class="te" id="ttE"></span>
+  <div class="tbdgs" id="ttB"></div>
+</div>
+
+<!-- ═══ Header ═══ -->
+<header id="hdr">
+  <div class="hbrand">
+    <div class="hicon"><i class="fa-solid fa-dharmachakra"></i></div>
+    <div class="htitles">
+      <div class="htitle">Dvapara Yuga</div>
+      <div class="hsub">
+        <span class="hsubt">Celestial Lineage Cosmos</span>
+        <span class="hdeva">द्वापर युग</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hleg">
+    <div class="li"><span class="ld" style="background:#3B5FF5;border-color:#93B4FC"></span>Male</div>
+    <div class="li"><span class="ld" style="background:#E03A7A;border-color:#F9A8D4"></span>Female</div>
+    <div class="li"><span class="ld" style="background:#D4930E;border-color:#FBBF24;box-shadow:0 0 6px rgba(251,191,36,.4)"></span>Divine</div>
+    <div class="li"><span class="ld" style="background:#059669;border-color:#6EE7B7"></span>Sage</div>
+    <div class="lsep"></div>
+    <div class="li"><span class="ll" style="border-top:2px dashed #E8922A"></span>Marriage</div>
+    <div class="li"><span class="ll" style="border-top:2px dashed #8B5CF6"></span>Niyoga</div>
+    <div class="li"><span class="ll" style="border-top:2.5px solid #38BDF8"></span>Divine</div>
+    <div class="li"><span class="ll" style="border-top:2px dashed #34D399"></span>Yajna</div>
+  </div>
+
+  <div class="hctrl">
+    <button class="hbtn" id="btnHelp"><i class="fa-solid fa-scroll"></i> Guide</button>
+    <button class="hbtn hbtn-accent" id="btnReset"><i class="fa-solid fa-arrows-spin"></i> Reset</button>
+  </div>
+</header>
+
+<!-- ═══ Workspace ═══ -->
+<div id="ws">
+
+  <!-- Left Panel -->
+  <aside id="lp">
+    <div class="psec">
+      <div class="plabel"><i class="fa-solid fa-magnifying-glass"></i> Search Universe</div>
+      <div class="swrap">
+        <i class="fa-solid fa-magnifying-glass sico"></i>
+        <input class="sinput" id="charSearch" type="text" placeholder="Name or epithet…" autocomplete="off">
+        <div id="sugg" class="hidden"></div>
+      </div>
+    </div>
+
+    <div class="psec">
+      <div class="plabel"><i class="fa-solid fa-flag"></i> Filter by Clan</div>
+      <div class="cgrid">
+        <button class="cbtn" data-clan="Kuru">👑 Kuru</button>
+        <button class="cbtn" data-clan="Yadava">🦚 Yadava</button>
+        <button class="cbtn" data-clan="Panchala">🔥 Panchala</button>
+        <button class="cbtn" data-clan="Gandhara">⛰️ Gandhara</button>
+        <button class="cbtn" data-clan="Madra">🌊 Madra</button>
+        <button class="cbtn" data-clan="Divine">✨ Divine</button>
+        <button class="cbtn active" data-clan="All">↩ Clear Filter</button>
+      </div>
+    </div>
+
+    <div class="psec">
+      <div class="plabel"><i class="fa-solid fa-shield-halved"></i> War Allegiance</div>
+      <div class="arow">
+        <button class="abtn" data-allegiance="Pandava">🔵 Pandava</button>
+        <button class="abtn" data-allegiance="Kaurava">🔴 Kaurava</button>
+        <button class="abtn" data-allegiance="Neutral">🟡 Neutral</button>
+      </div>
+    </div>
+
+    <div class="psec" style="flex:1;overflow-y:auto">
+      <div class="plabel"><i class="fa-solid fa-compass"></i> Canvas Guide</div>
+      <ul class="glist">
+        <li class="gi"><i class="fa-solid fa-hand-pointer"></i><span><strong>Click</strong> a node — inspect full profile, weapons &amp; family.</span></li>
+        <li class="gi"><i class="fa-solid fa-arrows-up-down-left-right"></i><span><strong>Drag</strong> to reposition. Node stays <em>pinned</em>.</span></li>
+        <li class="gi"><i class="fa-solid fa-right-to-bracket"></i><span><strong>Right-click</strong> pinned node to release it to physics.</span></li>
+        <li class="gi"><i class="fa-solid fa-code-branch"></i><span><strong>Double-click</strong> to collapse/expand descendants.</span></li>
+        <li class="gi"><i class="fa-solid fa-magnifying-glass-plus"></i><span><strong>Scroll/Pinch</strong> canvas to zoom. Drag background to pan.</span></li>
+      </ul>
+      <div class="chronicle">
+        <div class="chronicle-h">☸ Chronicle Note</div>
+        <p>Niyoga lines are <span style="color:#7C3AED;font-weight:600">violet</span>. Divine unions are <span style="color:#0EA5E9;font-weight:600">blue</span>. Yajna births are <span style="color:#059669;font-weight:600">emerald</span>. Marriage is <span style="color:#D97706;font-weight:600">amber</span>.</p>
+      </div>
+    </div>
+
+    <div class="psec">
+      <div class="sgrid">
+        <div class="scard"><span class="snum" id="totalCount">0</span><span class="slbl">Characters</span></div>
+        <div class="scard"><span class="snum" id="generationCount">0</span><span class="slbl">Generations</span></div>
+        <div class="scard"><span class="snum" id="chiranjeeviCount">0</span><span class="slbl">Chiranjeevis</span></div>
+        <div class="scard"><span class="snum" id="divineCount">0</span><span class="slbl">Divinities</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Canvas -->
+  <main id="cw">
+    <div id="loader">
+      <div class="lwhl"></div>
+      <div class="ltitle">Assembling the Cosmos</div>
+      <div class="lsub">द्वापर युग — Tracing divine lineages across time</div>
+    </div>
+    <div id="eraRuler"></div>
+    <div class="zfab">
+      <button class="zb" onclick="zoomIn()" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+      <button class="zb" onclick="zoomOut()" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+      <button class="zb" onclick="resetView()" title="Fit View"><i class="fa-solid fa-expand"></i></button>
+    </div>
+    <svg id="canvas"></svg>
+  </main>
+
+  <!-- Right Inspector -->
+  <div id="insp">
+    <div id="nosel">
+      <div class="nsi"><i class="fa-solid fa-om"></i></div>
+      <p class="nst">Select any character to reveal their full profile, lineage, weapons, and epic role.</p>
+    </div>
+    <div id="pv" style="display:none">
+      <div class="pbanner" id="pb">
+        <button class="pclose" onclick="closeInsp()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pavwrap">
+        <div id="pav">
+          <i id="pavico" class="fa-solid fa-user"></i>
+          <span id="pclanb"></span>
+        </div>
+      </div>
+      <div class="pnames">
+        <div id="pname"></div>
+        <div id="psk"></div>
+        <div id="pep"></div>
+        <div class="pbrow">
+          <div id="bdDiv" class="pb pb-div" style="display:none"><i class="fa-solid fa-star"></i> Incarnation of <span id="pInc"></span></div>
+          <div id="bdChi" class="pb pb-chi" style="display:none"><i class="fa-solid fa-infinity"></i> Chiranjeevi</div>
+        </div>
+      </div>
+      <div class="psbar">
+        <div class="ps"><span class="psl">Generation</span><span class="psv" id="pGen"></span></div>
+        <div class="ps"><span class="psl">Allegiance</span><span class="psv" id="pAl"></span></div>
+        <div class="ps"><span class="psl">Clan</span><span class="psv" id="pClan"></span></div>
+      </div>
+      <div class="pbody">
+        <div>
+          <div class="psl2"><i class="fa-solid fa-book-open"></i> Story &amp; Role</div>
+          <p class="pdesc" id="pDesc"></p>
+        </div>
+        <div id="wSec" style="display:none">
+          <div class="psl2"><i class="fa-solid fa-shield"></i> Weapons &amp; Attributes</div>
+          <div class="wcard">
+            <div class="wico"><i class="fa-solid fa-wand-sparkles"></i></div>
+            <div><div class="wlbl">Core Power</div><div class="wval" id="pWep"></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="psl2"><i class="fa-solid fa-users"></i> Parents</div>
+          <div class="chips" id="pPar"><span class="chip-none">None recorded</span></div>
+        </div>
+        <div>
+          <div class="psl2"><i class="fa-solid fa-heart"></i> Spouse(s)</div>
+          <div class="chips" id="pSpo"><span class="chip-none">None recorded</span></div>
+        </div>
+        <div>
+          <div class="psl2"><i class="fa-solid fa-seedling"></i> Children</div>
+          <div class="chips" id="pChi"><span class="chip-none">None recorded</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+          <button class="btnlin" id="btnLin"><i class="fa-solid fa-dna"></i> Trace Full Lineage</button>
+          <button class="btnupin" id="btnUpin" style="display:none"><i class="fa-solid fa-lock-open"></i> Unpin Node</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /ws -->
+
+<!-- Help Modal -->
+<div id="hlp" class="hidden">
+  <div class="mbox">
+    <div class="mhd">
+      <span class="mttl">☸ Lineage Cosmos — Guide</span>
+      <button class="hbtn hbtn-icon" onclick="toggleHelp(false)"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mbdy">
+      <p>An interactive visualisation of the <strong>Dvapara Yuga</strong> dynasty — from primordial deities through the Mahabharata war to the dawn of Kali Yuga.</p>
+      <h4>Navigation</h4>
+      <ul>
+        <li><strong>Click</strong> any node to open the character profile.</li>
+        <li><strong>Drag</strong> nodes to arrange — they pin in place (red ring).</li>
+        <li><strong>Right-click</strong> a pinned node to release it to physics.</li>
+        <li><strong>Double-click</strong> to collapse/expand all descendants.</li>
+        <li><strong>Scroll or pinch</strong> to zoom; drag background to pan.</li>
+      </ul>
+      <h4>Relationship Lines</h4>
+      <ul>
+        <li><span style="color:#D97706;font-weight:600">Amber dashed</span> — Standard marriage</li>
+        <li><span style="color:#7C3AED;font-weight:600">Violet dashed</span> — Niyoga (sanctioned levirate union)</li>
+        <li><span style="color:#0EA5E9;font-weight:600">Blue solid</span> — Divine boon (god summoned)</li>
+        <li><span style="color:#059669;font-weight:600">Emerald dashed</span> — Born of Yajna (fire sacrifice)</li>
+      </ul>
+      <h4>Node Sizes &amp; Rings</h4>
+      <ul>
+        <li>Larger circles = major epic characters. Smaller = peripheral.</li>
+        <li><span style="color:#10B981;font-weight:600">Green dashed ring</span> = Chiranjeevi (immortal)</li>
+        <li><span style="color:#EF4444;font-weight:600">Red ring</span> = Pinned node</li>
+        <li>Diamond shapes = union nodes (hover for type)</li>
+      </ul>
+    </div>
+    <div class="mft">
+      <button class="btnlin" style="width:auto;padding:8px 20px;display:inline-flex" onclick="toggleHelp(false)">Begin Exploration</button>
+    </div>
+  </div>
+</div>
+
+<script src="v3-src/data/characters.js"></script>
+<script src="v3-src/data/unions.js"></script>
+<script src="v3-src/js/engine.js"></script>
+<script src="v3-src/js/app.js"></script>
+</body>
+</html>
