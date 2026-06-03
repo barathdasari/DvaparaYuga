@@ -484,9 +484,95 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',system-ui,sans-serif;
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(108,79,191,.2);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ── Mobile menu button (hidden on desktop) ── */
+#btnMenu{display:none}
+
+/* ── Mobile overlay backdrop ── */
+#mobileBackdrop{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(2px);
+  z-index:25;
+}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:768px){
+  /* Header: hide legend, compact */
+  .hleg{display:none !important}
+  .hsubt,.hdeva{display:none}
+  .htitle{font-size:13px}
+  #hdr{padding:0 12px;height:52px}
+  .hicon{width:34px;height:34px;border-radius:10px}
+  .hicon i{font-size:15px}
+  .hbtn{height:30px;padding:0 10px;font-size:11px}
+
+  /* Show hamburger */
+  #btnMenu{
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border:1.5px solid var(--border);
+    border-radius:10px;background:var(--glass2);
+    backdrop-filter:blur(8px);cursor:pointer;color:var(--accent);
+    font-size:14px;order:-1;flex-shrink:0;
+  }
+
+  /* Left panel: off-screen drawer */
+  #lp{
+    position:fixed;left:-280px;top:52px;bottom:0;width:280px;
+    z-index:30;transition:left .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.12);
+  }
+  #lp.mobile-open{left:0}
+  #mobileBackdrop{display:block;opacity:0;pointer-events:none;
+    transition:opacity .28s}
+  #mobileBackdrop.visible{opacity:1;pointer-events:all}
+
+  /* Canvas: full width */
+  #ws{position:relative}
+  #cw{width:100%}
+
+  /* Inspector: bottom sheet */
+  #insp{
+    position:fixed;left:0;right:0;bottom:0;top:auto;
+    width:100%;height:72vh;
+    border-left:none;border-top:1px solid var(--border);
+    border-radius:20px 20px 0 0;
+    transform:translateY(100%);
+    box-shadow:0 -8px 40px rgba(60,40,120,.12);
+  }
+  #insp.open{transform:translateY(0)}
+
+  /* Bottom sheet drag handle */
+  #insp::before{
+    content:'';display:block;width:40px;height:4px;
+    background:rgba(108,79,191,.25);border-radius:2px;
+    margin:10px auto 0;flex-shrink:0;
+  }
+
+  /* Zoom buttons: smaller on mobile */
+  .zfab{bottom:12px;right:12px;gap:4px}
+  .zb{width:32px;height:32px;font-size:12px}
+
+  /* Era pills: smaller on mobile */
+  .era-pill{font-size:9px;padding:2px 7px 2px 6px}
+
+  /* Stats grid: 2x2 smaller */
+  .snum{font-size:18px}
+  .slbl{font-size:8px}
+
+  /* Inspector body: larger touch targets */
+  .chip{padding:7px 14px;font-size:13px}
+  .btnlin{padding:13px;font-size:13px}
+  #pname{font-size:18px}
+}
+
+@media(max-width:420px){
+  #insp{height:78vh}
+  .htitle{font-size:12px}
+}
 </style>
 </head>
 <body>
+<div id="mobileBackdrop" onclick="closeMobileMenu()"></div>
 <div id="app">
 
 <!-- Tooltip -->
@@ -522,6 +608,7 @@ html,body{height:100%;overflow:hidden;font-family:'Outfit',system-ui,sans-serif;
   </div>
 
   <div class="hctrl">
+    <button id="btnMenu" onclick="toggleMobileMenu()" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
     <button class="hbtn" id="btnHelp"><i class="fa-solid fa-scroll"></i> Guide</button>
     <button class="hbtn hbtn-accent" id="btnReset"><i class="fa-solid fa-arrows-spin"></i> Reset</button>
   </div>
