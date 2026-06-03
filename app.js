@@ -1,6 +1,23 @@
 // app.js — Inspector, search, filters, theme, modals
 // Depends on: characters.js, unions.js, engine.js
 
+// ── Mobile menu ───────────────────────────────────────────────────────────────
+function toggleMobileMenu() {
+  const lp = document.getElementById('lp');
+  const bd = document.getElementById('mobileBackdrop');
+  const open = lp.classList.toggle('mobile-open');
+  bd.classList.toggle('visible', open);
+}
+function closeMobileMenu() {
+  document.getElementById('lp').classList.remove('mobile-open');
+  document.getElementById('mobileBackdrop').classList.remove('visible');
+}
+window.toggleMobileMenu = toggleMobileMenu;
+window.closeMobileMenu  = closeMobileMenu;
+
+// Close left panel when user taps a search result or clan button on mobile
+function isMobile() { return window.innerWidth <= 768; }
+
 // ── Inspector ─────────────────────────────────────────────────────────────────
 const BANNER_COLORS = {
   Pandava:  'linear-gradient(135deg, #2251CC 0%, #3B7BF5 100%)',
@@ -195,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = c.name;
         sugg.classList.add('hidden');
         window.focusNode(c.id);
+        if (isMobile()) closeMobileMenu();
       });
       sugg.appendChild(item);
     });
